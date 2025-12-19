@@ -1,7 +1,19 @@
 import tkinter as tk
 from tkinter import ttk
+import sys
+import os
 
 from core.calculator import calculate_engineering_code
+
+
+def resource_path(relative_path: str) -> str:
+    """Get absolute path to resource, works for dev and for PyInstaller."""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
 def main() -> None:
@@ -11,6 +23,13 @@ def main() -> None:
     """
     root = tk.Tk()
     root.title("METSO HP300 Code Generator")
+    
+    # Set window icon if icon.ico exists
+    try:
+        icon_path = resource_path("icon.ico")
+        root.iconbitmap(icon_path)
+    except (tk.TclError, FileNotFoundError):
+        pass  # Icon file not found, continue without it
 
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
@@ -38,6 +57,8 @@ def main() -> None:
     code_var = tk.StringVar()
     code_entry = ttk.Entry(main_frame, textvariable=code_var, width=30, validate="key", validatecommand=vcmd, font=("TkDefaultFont", 20))
     code_entry.grid(row=1, column=0, sticky="ew")
+    # Bind Enter key to trigger calculation
+    code_entry.bind("<Return>", lambda event: on_generate())
 
     result_label = ttk.Label(main_frame, text="Result:", font=("TkDefaultFont", 16))
     result_label.grid(row=2, column=0, sticky="w", pady=(16, 0))
@@ -67,9 +88,9 @@ def main() -> None:
 
     generate_button = ttk.Button(main_frame, text="Convert", command=on_generate)
     generate_button.config(width=10)
-    # Apply custom style with larger font for button
+    # Apply custom style with larger font and padding for button height
     style = ttk.Style()
-    style.configure('Large.TButton', font=('TkDefaultFont', 16))
+    style.configure('Large.TButton', font=('TkDefaultFont', 16), padding=(0, 5))
     generate_button.configure(style='Large.TButton')
     generate_button.grid(row=4, column=0, pady=(8, 0), sticky="e")
 
