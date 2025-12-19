@@ -32,16 +32,22 @@ def main() -> None:
 
     vcmd = (root.register(validate_code), "%P")
 
-    code_label = ttk.Label(main_frame, text="Input hexcode:")
+    code_label = ttk.Label(main_frame, text="Input hexcode:", font=("TkDefaultFont", 16))
     code_label.grid(row=0, column=0, sticky="w")
 
     code_var = tk.StringVar()
-    code_entry = ttk.Entry(main_frame, textvariable=code_var, width=30, validate="key", validatecommand=vcmd)
+    code_entry = ttk.Entry(main_frame, textvariable=code_var, width=30, validate="key", validatecommand=vcmd, font=("TkDefaultFont", 20))
     code_entry.grid(row=1, column=0, sticky="ew")
 
+    result_label = ttk.Label(main_frame, text="Result:", font=("TkDefaultFont", 16))
+    result_label.grid(row=2, column=0, sticky="w", pady=(16, 0))
+
     result_var = tk.StringVar(value="")
-    result_label = ttk.Label(main_frame, textvariable=result_var)
-    result_label.grid(row=2, column=0, sticky="w", pady=(8, 0))
+    # Use tk.Entry instead of ttk.Entry for better readonly text selection
+    result_entry = tk.Entry(main_frame, textvariable=result_var, width=30, state="readonly", 
+                            font=("TkDefaultFont", 20), readonlybackground="white", 
+                            relief="solid", borderwidth=1)
+    result_entry.grid(row=3, column=0, sticky="ew")
 
     def on_generate() -> None:
         """Handle Generate button: validate input, run algorithm, show result."""
@@ -60,7 +66,12 @@ def main() -> None:
         result_var.set(engineering_code)
 
     generate_button = ttk.Button(main_frame, text="Convert", command=on_generate)
-    generate_button.grid(row=3, column=0, pady=(8, 0), sticky="e")
+    generate_button.config(width=10)
+    # Apply custom style with larger font for button
+    style = ttk.Style()
+    style.configure('Large.TButton', font=('TkDefaultFont', 16))
+    generate_button.configure(style='Large.TButton')
+    generate_button.grid(row=4, column=0, pady=(8, 0), sticky="e")
 
     code_entry.focus_set()
 
